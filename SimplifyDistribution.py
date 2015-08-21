@@ -1,11 +1,20 @@
 import pandas as pd
 import numpy as np
+import argparse
+import sys
+
+parser = argparse.ArgumentParser(description="Simplify an NGrams file from Google.")
+parser.add_argument('inpath', type=str,
+        help='The file to progress.')
+parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
+        default=sys.stdout, help='The CSV file to write to.')
+args = parser.parse_args()
 
 # Since the data is big and we'll be simplify it, let's read in chunks and 
 # fold chunk by chunk
 
-chunksize = 100000
-reader = pd.read_csv('googlebooks-eng-all-1gram-20120701-j.gz', 
+chunksize = 20000
+reader = pd.read_csv(args.inpath, 
                    sep='\t', compression='infer', 
                    usecols = ['term', 'year', 'match_count'],
                    chunksize=chunksize,
@@ -18,7 +27,7 @@ aside = None
 i = 0
 print "reading chunk:",
 for chunk in reader:
-    print "%d," % i,
+    print "chunk %d of %s," % (i, args.inpath)
     # Trim to better represented dates
     chunk = chunk.query('year >= 1810')
     
@@ -65,5 +74,6 @@ for chunk in reader:
     # For testing
     #if i >=5:
     #    break
-print ""
-data.to_csv('test.csv')
+
+
+data.to_csv(args.outpath)
