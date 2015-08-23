@@ -76,4 +76,4 @@ for chunk in reader:
     #    break
 
 
-data.to_csv(args.outpath)
+data.to_csv(args.outfile)
